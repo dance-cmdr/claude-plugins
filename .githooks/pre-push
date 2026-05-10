@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Git pre-push hook: runs skill-reviewer on changed SKILL.md files
+# Install: git config core.hooksPath .githooks
+
+exec "$(git rev-parse --show-toplevel)/.claude/hooks/pre-push-skill-review.sh" "$@"

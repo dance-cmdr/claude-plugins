@@ -1,0 +1,9 @@
+{
+  "name": "skill-reviewer",
+  "version": "0.1.0",
+  "description": "Reviews SKILL.md files against Anthropic best practices",
+  "author": {
+    "name": "Alex Spyro"
+  },
+  "keywords": ["skill-review", "quality", "best-practices", "SKILL.md"]
+}

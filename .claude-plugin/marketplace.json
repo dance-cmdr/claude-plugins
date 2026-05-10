@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "dance-cmdr-plugins",
+  "version": "0.1.0",
+  "description": "Personal Claude Code plugin marketplace",
+  "owner": {
+    "name": "dance-cmdr"
+  },
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "skill-reviewer",
+      "source": "./plugins/skill-reviewer",
+      "description": "Reviews SKILL.md files against Anthropic best practices",
+      "version": "0.1.0",
+      "author": {
+        "name": "Alex Spyro"
+      },
+      "tags": ["review", "skills", "quality"],
+      "keywords": ["skill-review", "SKILL.md", "best-practices"]
+    },
+    {
+      "name": "auto-research",
+      "source": "./plugins/auto-research",
+      "description": "Iterative Research-Review-Pivot verification loop with skill generator for niche adaptation",
+      "version": "0.1.0",
+      "author": {
+        "name": "Alex Spyro"
+      },
+      "tags": ["research", "review", "verification", "generator"],
+      "keywords": ["research-loop", "subagent", "claim-verification", "pr-review", "spec-review"]
+    }
+  ]
+}

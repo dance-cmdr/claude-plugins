@@ -1,0 +1,9 @@
+{
+  "name": "auto-research",
+  "version": "0.1.0",
+  "description": "Iterative Research-Review-Pivot verification loop with skill generator for niche adaptation",
+  "author": {
+    "name": "Alex Spyro"
+  },
+  "keywords": ["research", "verification", "subagent", "generator", "review-loop"]
+}
