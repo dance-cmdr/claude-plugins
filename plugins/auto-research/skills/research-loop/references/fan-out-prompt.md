@@ -48,6 +48,11 @@ CLUSTER SUMMARY:
 
 ## Construction Notes
 
+**Inlining is mandatory.** Subagents run in forked context with no access to the parent's
+filesystem paths. They cannot read `${CLAUDE_SKILL_DIR}/references/...` — those paths only
+resolve in the orchestrating skill's context. All protocol and prompt content must be copied
+verbatim into the agent prompt.
+
 When building this prompt at runtime:
 1. Replace `{{cluster_id}}` and `{{theme}}` from the cluster metadata
 2. Replace `{{numbered findings list}}` with the actual findings for this cluster

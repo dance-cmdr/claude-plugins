@@ -24,6 +24,13 @@ Scaffold a standalone research skill customized for a specific domain.
 - You want to run a one-off research loop (use `/research-loop` directly)
 - You want to understand how auto-research works (read the README)
 
+## Tool Access
+
+`Bash` — reading source template files. `Read` — reading reference materials to inline.
+`Write` — creating generated SKILL.md and reference files. `Edit` — updating existing
+plugin.json if output target is an existing plugin. All four are minimum necessary for
+the generator to scaffold a complete standalone skill.
+
 ## Built-in Templates
 
 | Template | Best for |
@@ -75,7 +82,8 @@ Ask these using AskUserQuestion, adapting based on the template chosen:
 
 5. **Skill name**: "What should the skill be called?"
    - Suggest a default based on template (e.g., `pr-research`, `spec-research`)
-   - Must be kebab-case
+   - Validate: must match `[a-z0-9]+(-[a-z0-9]+)*`, max 64 characters
+   - If invalid, explain the constraint and ask again
 
 ### Step 3: Read Source Materials
 
@@ -85,6 +93,10 @@ Read these files to assemble the generated skill:
 2. Loop protocol: `${CLAUDE_SKILL_DIR}/../research-loop/references/loop-protocol.md`
 3. Agent prompts: `${CLAUDE_SKILL_DIR}/../research-loop/references/agent-prompts.md`
 4. Skill template: `${CLAUDE_SKILL_DIR}/references/skill-template.md`
+
+If any file is not found, stop and report which file is missing. This likely means
+the auto-research plugin directory was moved or partially installed. The user should
+reinstall via `claude plugin marketplace add` or verify their plugin path.
 
 ### Step 4: Generate Files
 

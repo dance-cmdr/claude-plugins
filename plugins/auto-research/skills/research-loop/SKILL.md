@@ -4,6 +4,8 @@ description: >
   Run an iterative Research-Review-Pivot verification loop on findings from any source.
   Analyzes PR review comments, spec feedback, or structured claims against a codebase.
   Each finding is verified through multi-round subagent cycling with adaptive scope.
+  Triggers on "verify these findings", "research these comments", "check if this
+  feedback is valid", "analyze review comments", "run research loop".
 argument-hint: "<pr-url | findings-file-path | 'paste'>"
 allowed-tools: Bash Read Grep WebFetch
 ---
@@ -23,6 +25,13 @@ Verify findings against a codebase through Research-Review cycling with 5 Whys d
 - You already know the answer (just respond directly)
 - Findings are purely stylistic/preference (no codebase verification needed)
 - Use `/generate` to create a niche-specific version of this skill
+
+## Tool Access
+
+`Bash` — required for `gh api` calls and `grep`/`find` during codebase exploration.
+`Read` — file content verification at specific lines. `Grep` — pattern searching for
+claim evidence. `WebFetch` — fetching external references or live documentation when
+scope is wide. All four are minimum necessary for the verification loop to function.
 
 ## Prerequisites
 

@@ -21,6 +21,8 @@ Run the verification loop directly on any set of findings.
 /research-loop paste
 ```
 
+`paste` — enter findings as a markdown list in the next prompt (one bullet per finding).
+
 Processes findings through multi-round Research→Review cycling:
 - **Research agent** explores codebase, produces claims with evidence paths
 - **Review agent** verifies claims using 5 Whys depth, rates RED/AMBER/GREEN
