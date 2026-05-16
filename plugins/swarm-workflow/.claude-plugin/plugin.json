@@ -1,0 +1,9 @@
+{
+  "name": "swarm-workflow",
+  "version": "0.1.0",
+  "description": "Parallel TDD development pipeline: spec, plan, swarm execution with RED/GREEN agent separation, and validation",
+  "author": {
+    "name": "Alex Spyro"
+  },
+  "keywords": ["tdd", "swarm", "parallel", "workflow", "spec", "validate"]
+}
