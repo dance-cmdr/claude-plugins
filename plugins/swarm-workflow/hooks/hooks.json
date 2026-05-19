@@ -1,0 +1,14 @@
+{
+  "PostToolUse": [
+    {
+      "if": "Write|Edit",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/hooks/auto-lint.sh",
+          "timeout": 30
+        }
+      ]
+    }
+  ]
+}

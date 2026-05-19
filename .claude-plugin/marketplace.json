@@ -33,6 +33,17 @@
       "keywords": ["research-loop", "subagent", "claim-verification", "pr-review", "spec-review"]
     },
     {
+      "name": "swarm-workflow",
+      "source": "./plugins/swarm-workflow",
+      "description": "Parallel TDD development pipeline: spec, plan, swarm execution with RED/GREEN agent separation, and validation",
+      "version": "0.1.0",
+      "author": {
+        "name": "Alex Spyro"
+      },
+      "tags": ["tdd", "swarm", "parallel", "workflow"],
+      "keywords": ["tdd", "swarm", "parallel", "workflow", "spec", "validate", "red-green"]
+    },
+    {
       "name": "obsidian-knowledge-management",
       "source": "./plugins/obsidian-knowledge-management",
       "description": "Set up and operate an Obsidian vault as a personal knowledge graph with file-based retrieval, session reflection, and optional Zettelkasten formatting",
