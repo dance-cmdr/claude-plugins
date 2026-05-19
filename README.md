@@ -12,6 +12,7 @@ claude plugin marketplace add dance-cmdr/claude-plugins
 
 | Plugin | Description | Commands |
 |--------|-------------|----------|
+| [obsidian-knowledge-management](plugins/obsidian-knowledge-management/) | Personal second-brain with task orchestration, composable domain vaults, and ADHD-friendly energy-aware prioritisation | `/setup`, `/orient`, `/next`, `/queue`, `/wrap`, `/connect`, `/retrieve`, `/reflect`, `/maintain`, `/zettelkasten` |
 | [skill-reviewer](plugins/skill-reviewer/) | Reviews SKILL.md files against Anthropic best practices | `/skill-reviewer` |
 | [auto-research](plugins/auto-research/) | Iterative Research-Review-Pivot verification loop with skill generator | `/research-loop`, `/generate` |
 | [swarm-workflow](plugins/swarm-workflow/) | Parallel TDD development pipeline: spec, plan, swarm execution with RED/GREEN agent separation, and validation | `/spec`, `/swarm-plan`, `/swarm`, `/validate`, `/co-design`, `/swarm-spark`, `/swarm-tmux`, `/super-swarm` |

@@ -1,29 +1,35 @@
 {
   "name": "obsidian-knowledge-management",
-  "version": "0.1.0",
-  "description": "Set up and operate an Obsidian vault as a personal knowledge graph with file-based retrieval, session reflection, and optional Zettelkasten formatting",
+  "version": "0.2.0",
+  "description": "Personal second-brain with task orchestration, session management, and composable domain-specific knowledge vaults via symlinks. ADHD-friendly design with energy-aware prioritisation.",
   "author": {
     "name": "Alex Spyro"
   },
-  "keywords": ["obsidian", "knowledge-management", "knowledge-graph", "rag", "notes", "zettelkasten"],
+  "keywords": ["obsidian", "knowledge-management", "knowledge-graph", "second-brain", "task-management", "adhd", "zettelkasten", "orchestration"],
   "userConfig": {
     "vault_path": {
       "type": "directory",
-      "title": "Vault path",
-      "description": "Path to your Obsidian knowledge vault",
+      "title": "Second-brain path",
+      "description": "Path to your second-brain vault (e.g., ~/Documents/second-brain)",
       "required": true
     },
     "vault_preset": {
       "type": "string",
       "title": "Vault preset",
-      "description": "Structure template: zettelkasten, flat, or para",
-      "default": "zettelkasten"
+      "description": "Structure template: orchestrated, zettelkasten, flat, or para",
+      "default": "orchestrated"
     },
     "observer_enabled": {
       "type": "boolean",
       "title": "Enable observer",
       "description": "Whether the periodic observer watches for patterns during sessions",
       "default": true
+    },
+    "auto_commit": {
+      "type": "string",
+      "title": "Auto-commit mode",
+      "description": "How session state is version controlled: commit-only, commit-and-push, or manual",
+      "default": "commit-only"
     }
   }
 }

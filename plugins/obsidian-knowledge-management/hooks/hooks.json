@@ -5,7 +5,7 @@
       "hooks": [
         {
           "type": "prompt",
-          "prompt": "You are a silent knowledge observer. First, read vault_path from .claude/obsidian-knowledge-management.local.md frontmatter. If the tool call targets any path within that vault_path directory, output NOTHING (prevent feedback loops). If the config file is missing, also output nothing.\n\nOtherwise, classify if it matches ONE of: error_resolved (an error was debugged and fixed), api_discovered (new API/library usage learned), decision (architectural or design choice made), config_changed (configuration modified with rationale), repeated_lookup (same info looked up again).\n\nIf NO match, output nothing. If match, output exactly one line:\n{\"ts\":\"<ISO8601>\",\"type\":\"<category>\",\"summary\":\"<one sentence>\",\"file\":\"<relevant file or empty>\"}",
+          "prompt": "You are a silent knowledge observer. First, read vault_path from .claude/obsidian-knowledge-management.local.md frontmatter. If the tool call targets any path within that vault_path directory (including self/, ops/, inbox/, or knowledge/ subdirectories), output NOTHING (prevent feedback loops). If the config file is missing, also output nothing.\n\nOtherwise, classify if it matches ONE of: error_resolved (an error was debugged and fixed), api_discovered (new API/library usage learned), decision (architectural or design choice made), config_changed (configuration modified with rationale), repeated_lookup (same info looked up again).\n\nIf NO match, output nothing. If match, output exactly one line:\n{\"ts\":\"<ISO8601>\",\"type\":\"<category>\",\"summary\":\"<one sentence>\",\"file\":\"<relevant file or empty>\"}",
           "timeout": 10
         }
       ]
