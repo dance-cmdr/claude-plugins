@@ -1,10 +1,10 @@
 ---
 name: connect
 description: >
-  Load relevant vault knowledge into the current session at startup. Reads vault
-  config, infers relevant topics from working directory and git context, loads
-  matching topic indexes, scans recent notes, and presents a compact context
-  summary. The "RAG at session start" mechanism.
+  Load relevant knowledge from all linked vaults into the current session.
+  Reads vault config, infers relevant topics from working directory and git
+  context, searches across all domain vaults and personal knowledge, and
+  presents a compact context summary. The "RAG at session start" mechanism.
 when_to_use: >
   "connect vault", "load vault context", "what do I know about",
   "prime context", "session context", "load my notes"
@@ -13,8 +13,8 @@ allowed-tools: Bash Read Grep Glob
 
 # connect -- Session Context Loading
 
-Load your Obsidian vault context at the start of a session so relevant knowledge
-is immediately available without manual retrieval.
+Load relevant knowledge from your second-brain and all linked domain vaults
+so context is immediately available without manual retrieval.
 
 ## When to Use
 
@@ -27,6 +27,7 @@ is immediately available without manual retrieval.
 - For deep search across the full vault (use /retrieve instead)
 - For writing or modifying notes (use /reflect or direct edits)
 - When vault is not yet configured (use /setup first)
+- For session orientation with tasks/goals (use /orient instead)
 
 ---
 
@@ -37,27 +38,23 @@ is immediately available without manual retrieval.
 Read `.claude/obsidian-knowledge-management.local.md` from the project root.
 Extract YAML frontmatter fields:
 
-- `vault_path` (required) -- absolute path to the Obsidian vault
-- `vault_preset` (optional, default: `zettelkasten`)
+- `vault_path` (required) -- absolute path to the second-brain
+- `vault_preset` (optional, default: `orchestrated`)
 
 If the config file does not exist or `vault_path` is missing, stop and instruct
 the user to run `/setup` first.
 
 ### Step 2: Read Vault Config
 
-Read `{vault_path}/.vault-config.md` to understand vault structure. Extract:
+Read `{vault_path}/.vault-config.md` to understand structure. Extract:
 
-- `index_dir` -- directory containing topic indexes (default: varies by preset)
+- `knowledge_vaults` -- list of linked domain vaults (name, symlink path, domain description)
+- `personal_knowledge_dir` -- path to personal knowledge (default: `knowledge/personal`)
 - `inbox_dir` -- inbox directory path
-- `topics` -- list of known topic labels
 
-If `.vault-config.md` does not exist, fall back to preset defaults:
-
-| Preset | index_dir | inbox_dir |
-|--------|-----------|-----------|
-| `zettelkasten` | `1. Think` | `0. Inbox` |
-| `flat` | `.` | `inbox` |
-| `para` | `Areas` | `Inbox` |
+For orchestrated preset, the search spans:
+- `{vault_path}/{personal_knowledge_dir}/` (personal cross-domain notes)
+- Each `{vault_path}/{symlink}` from `knowledge_vaults` list
 
 ### Step 3: Infer Relevant Topics
 
@@ -77,58 +74,63 @@ git log --oneline -5 2>/dev/null
 find . -maxdepth 2 -type f | sed 's|.*\.||' | sort | uniq -c | sort -rn | head -5
 ```
 
-Match these signals against the vault's known `topics` list. Matching rules:
+**Domain matching** (new for orchestrated preset):
+Match signals against each vault's `domain` description. For example, if working
+in a PythonAnywhere repo and a vault has `domain: "PythonAnywhere infrastructure"`,
+prioritise that vault's indexes.
 
+**Topic matching** (within each vault):
+- If the vault has an `indexes/` directory, search index filenames for topic matches
+- If the vault uses zettelkasten (detected by `1. Think/` directory), search `1. Think/` titles
 - Directory/repo name contains a topic label (case-insensitive)
 - Commit messages mention a topic label
-- File extensions map to topics (e.g., `.py` -> `python`, `.rs` -> `rust`, `.tf` -> `terraform`)
+- File extensions map to topics (e.g., `.py` -> `python`, `.tf` -> `terraform`)
 
 If no topics match, select up to 5 indexes alphabetically as a general context load.
 
 ### Step 4: Load Topic Indexes
 
-For each matched topic, read the corresponding index file:
+For each matched vault and topic, search for index files:
 
+```bash
+# Check for indexes/ directory in each vault
+for VAULT_LINK in {vault_path}/knowledge/*/; do
+  find "$VAULT_LINK" -path "*/indexes/*" -name "*{topic}*" 2>/dev/null
+done
+
+# Also check personal knowledge
+find "{vault_path}/{personal_knowledge_dir}" -name "*index*" -name "*{topic}*" 2>/dev/null
 ```
-{vault_path}/{index_dir}/_index_{topic}.md
-```
 
-Read the full content of each index. These are compact note catalogs that
-provide an overview of what the vault knows about each topic.
-
-If an index file does not exist for a matched topic, skip it silently.
-
-Cap at 5 indexes maximum to avoid context bloat.
+Read the full content of each matching index. Cap at 5 indexes total across all vaults.
 
 ### Step 5: Scan Recent Notes
 
-Find notes modified within the last 7 days:
+Find notes modified within the last 7 days across ALL knowledge paths:
 
 ```bash
-find "{vault_path}" -name "*.md" -mtime -7 -not -path "*/.trash/*" -not -name ".*"
+BRAIN="{vault_path}"
+find "$BRAIN/knowledge" -name "*.md" -mtime -7 -not -path "*/.trash/*" -not -path "*/.git/*" -not -name ".*"
 ```
 
-For each recent note (up to 50), read only the YAML frontmatter (between the
-opening `---` and closing `---` lines). Extract:
+For each recent note (up to 50), read only the YAML frontmatter. Extract:
 
 - Title (from `title:` field or filename)
 - Modified date
+- Which vault it belongs to (from path)
 
 Sort by modification date, most recent first.
-
-If more than 10 recent notes exist, present only the top 10 with a count of
-remaining: "(+N more)".
+If more than 10, present top 10 with "(+N more)".
 
 ### Step 6: Check Inbox
 
-Count pending items in the inbox directory:
+Count pending items in the brain's inbox:
 
 ```bash
 find "{vault_path}/{inbox_dir}" -name "*.md" -type f | wc -l
 ```
 
-Count pending-reflection notes specifically (files matching `*-observation.md`
-or containing `status: pending-reflection` in frontmatter):
+Count pending-reflection notes:
 
 ```bash
 grep -rl "status: pending-reflection" "{vault_path}/{inbox_dir}" 2>/dev/null | wc -l
@@ -136,39 +138,40 @@ grep -rl "status: pending-reflection" "{vault_path}/{inbox_dir}" 2>/dev/null | w
 
 ### Step 7: Present Context Summary
 
-Output the context summary in this exact format:
-
 ```markdown
-## Vault Context (obsidian-knowledge-management)
+## Knowledge Context
 
-**Relevant indexes loaded:** {comma-separated topic list, or "none (general load)"}
+**Vaults loaded:** {list of vault names that matched, or "all (general load)"}
+**Relevant indexes:** {comma-separated topic list from matched indexes}
+
 **Recent notes (7d):**
-- [[{note title}]] ({N}d ago)
-- [[{note title}]] ({N}d ago)
+- [[{note title}]] ({vault-name}, {N}d ago)
+- [[{note title}]] ({vault-name}, {N}d ago)
 ...
 
-**Open inbox items:** {count} ({reflection_count} pending reflection)
+**Inbox:** {count} items ({reflection_count} pending reflection)
 
-Use /retrieve [query] for deeper search. Use /reflect to process pending observations.
+Use /retrieve [query] for deeper search. Use /orient for task/goals briefing.
 ```
 
-If the vault is empty (no indexes, no recent notes, no inbox items), output:
+If no knowledge exists yet:
 
 ```markdown
-## Vault Context (obsidian-knowledge-management)
+## Knowledge Context
 
-**Vault is empty.** No indexes, recent notes, or inbox items found.
+**No knowledge loaded.** Vaults are empty or not yet linked.
 
-Use /setup to configure vault structure, or start adding notes to your vault.
+Use /setup --add-vault to link a domain vault, or start capturing to inbox/.
 ```
 
 ---
 
 ## Edge Cases
 
-- **Empty vault**: Display the empty-vault message. Do not error.
-- **No matching topics**: Load up to 5 indexes alphabetically. Note "none (general load)" in output.
+- **Empty vaults**: Display count of linked vaults but note they're empty. Do not error.
+- **No matching topics**: Load up to 5 indexes alphabetically across all vaults.
+- **Broken symlinks**: Warn which vault link is broken, continue with others.
 - **Large vault (>50 recent notes)**: Only read frontmatter of the 50 most recent. Display top 10.
-- **Missing .vault-config.md**: Use preset defaults from Step 2 fallback table.
-- **Vault path does not exist**: Stop with clear error: "Vault path does not exist: {path}. Run /setup to reconfigure."
+- **Missing .vault-config.md**: Stop with clear error pointing to /setup.
+- **Single-vault (non-orchestrated) preset**: Fall back to searching just `vault_path` directly (backwards compatible).
 - **Permission errors**: Report which paths are inaccessible, continue with what is readable.
