@@ -1,0 +1,29 @@
+{
+  "name": "obsidian-knowledge-management",
+  "version": "0.1.0",
+  "description": "Set up and operate an Obsidian vault as a personal knowledge graph with file-based retrieval, session reflection, and optional Zettelkasten formatting",
+  "author": {
+    "name": "Alex Spyro"
+  },
+  "keywords": ["obsidian", "knowledge-management", "knowledge-graph", "rag", "notes", "zettelkasten"],
+  "userConfig": {
+    "vault_path": {
+      "type": "directory",
+      "title": "Vault path",
+      "description": "Path to your Obsidian knowledge vault",
+      "required": true
+    },
+    "vault_preset": {
+      "type": "string",
+      "title": "Vault preset",
+      "description": "Structure template: zettelkasten, flat, or para",
+      "default": "zettelkasten"
+    },
+    "observer_enabled": {
+      "type": "boolean",
+      "title": "Enable observer",
+      "description": "Whether the periodic observer watches for patterns during sessions",
+      "default": true
+    }
+  }
+}
