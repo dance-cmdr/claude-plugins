@@ -1,0 +1,25 @@
+{
+  "PostToolUse": [
+    {
+      "if": "Bash|Write|Edit",
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "You are a silent knowledge observer. First, read vault_path from .claude/obsidian-knowledge-management.local.md frontmatter. If the tool call targets any path within that vault_path directory, output NOTHING (prevent feedback loops). If the config file is missing, also output nothing.\n\nOtherwise, classify if it matches ONE of: error_resolved (an error was debugged and fixed), api_discovered (new API/library usage learned), decision (architectural or design choice made), config_changed (configuration modified with rationale), repeated_lookup (same info looked up again).\n\nIf NO match, output nothing. If match, output exactly one line:\n{\"ts\":\"<ISO8601>\",\"type\":\"<category>\",\"summary\":\"<one sentence>\",\"file\":\"<relevant file or empty>\"}",
+          "timeout": 10
+        }
+      ]
+    }
+  ],
+  "Stop": [
+    {
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Check if /tmp/okm-observations-$(date +%Y-%m-%d).jsonl exists and is non-empty. If it does not exist or is empty, do nothing and output nothing.\n\nIf it exists and has content:\n1. Read vault_path from .claude/obsidian-knowledge-management.local.md YAML frontmatter\n2. Read .vault-config.md from that vault_path to find inbox_dir\n3. Generate a short hash from the file content (first 6 chars of md5)\n4. Write a summary note to {vault_path}/{inbox_dir}/session-$(date +%Y-%m-%d)-{hash}.md with this format:\n   ---\n   created: <ISO8601>\n   source: observer\n   type: session-summary\n   status: pending-reflection\n   ---\n   # Session Observations\n   \n   - <each observation as a bullet from the JSONL>\n5. Delete /tmp/okm-observations-$(date +%Y-%m-%d).jsonl\n\nOutput only the path of the created note, or nothing if no observations existed.",
+          "timeout": 30
+        }
+      ]
+    }
+  ]
+}
